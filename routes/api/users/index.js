@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const validation = require('./validation')
-const usersControllers = require('../../../controllers/users')
+const userController = require('../../../controllers/users')
+
+router.post('/auth/register')
+router.post('/auth/login')
+router.post('/auth/logout')
 
 module.exports = router

@@ -1,11 +1,12 @@
 const Contacts = require('../model/contacts')
+const { HttpCode } = require('../helpers/constants')
 
 const getAll = async (_req, res, next) => {
   try {
     const contacts = await Contacts.listContacts()
     return res.json({
       status: 'success',
-      code: 200,
+      code: HttpCode.OK,
       data: {
         contacts,
       }
@@ -21,15 +22,15 @@ const getById = async (req, res, next) => {
     if (contact) {
   return res.json({
       status: 'success',
-      code: 200,
+      code: HttpCode.OK,
       data: {
         contact,
       }
     })
     } else {
-      return res.status(404).json({
+      return res.status(HttpCode.NOT_FOUND).json({
       status: 'error',
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: 'Not found',
     })
     }
@@ -41,9 +42,9 @@ const getById = async (req, res, next) => {
 const createContact = async (req, res, next) => {
    try {
     const contact = await Contacts.addContact(req.body)
-    return res.status(201).json({
+    return res.status(HttpCode.CREATED).json({
       status: 'success',
-      code: 201,
+      code: HttpCode.CREATED,
       data: {
         contact,
       }
@@ -57,24 +58,24 @@ const update = async (req, res, next) => {
   try {
     const contact = await Contacts.updateContact(req.params.contactId, req.body)
     if (Object.values(req.body).length === 0) {
-      return res.status(404).json({
+      return res.status(HttpCode.NOT_FOUND).json({
       status: 'error',
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: "missing fields",
     })
     }
    if (contact) {
   return res.json({
       status: 'success',
-      code: 200,
+      code: HttpCode.OK,
       data: {
         contact,
       }
     })
     } else {
-      return res.status(404).json({
+      return res.status(HttpCode.NOT_FOUND).json({
       status: 'error',
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: 'Not found',
     })
     }
@@ -89,13 +90,13 @@ const deleteContact = async (req, res, next) => {
     if (contact) {
   return res.json({
       status: 'success',
-      code: 200,
+      code: HttpCode.OK,
       message: "contact deleted"
     })
     } else {
-      return res.status(404).json({
+      return res.status(HttpCode.NOT_FOUND).json({
       status: 'error',
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: 'Not found',
     })
     }
