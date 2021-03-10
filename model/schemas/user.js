@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const { Schema, model } = require('mongoose');
 const bcrypt = require('bcryptjs')
-const { FREE, PRO, PREMIUM } = require('../../helpers/constants')
+const { Subscription } = require('../../helpers/constants')
 const SALT_WORK_FACTOR = 8
 
 const userSchema = new Schema({
@@ -21,10 +20,10 @@ const userSchema = new Schema({
   subscription: {
     type: String,
       enum: {
-          values: [FREE, PRO, PREMIUM],
+          values: [Subscription.FREE, Subscription.PRO, Subscription.PREMIUM],
           massage: 'You can only choose from the above',
     },
-    default: FREE,
+    default: Subscription.FREE,
   },
     token: {
         type: String,
