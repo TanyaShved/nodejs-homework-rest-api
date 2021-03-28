@@ -62,7 +62,11 @@ const login = async (req, res, next) => {
   }
 }
 
-const logout = async (req, res, next) => {}
+const logout = async (req, res, _next) => {
+  const id = req.user.id
+  await Users.uppdateToken(id, null)
+  return res.status(HttpCode.NO_CONTENT).json({})
+}
 
 module.exports = {
     registration,

@@ -4,15 +4,8 @@ const { HttpCode } = require('./constants')
 
 const guard = (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user) => {
-    // const header = req.get('Authorization');
-    // if (!header) {
-    //     return res.status(HttpCode.UNAUTHORIZED).json({
-    //       status: 'error',
-    //         code: HttpCode.UNAUTHORIZED,
-    //         message: "Not authorized",
-    //   })  
-    //   }
-     if (!user || err) {
+    const [, token] = req.get('Authorization').split(' ');
+     if (!user || err || token !== user.token) {
         return res.status(HttpCode.UNAUTHORIZED).json({
           status: 'error',
             code: HttpCode.UNAUTHORIZED,
