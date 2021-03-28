@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const Users = require('../model/users')
-const { HttpCode, Subscription } = require('../helpers/constants')
+const { HttpCode } = require('../helpers/constants')
 require('dotenv').config()
 const SECRET_KEY = process.env.JWT_SECRET;
 

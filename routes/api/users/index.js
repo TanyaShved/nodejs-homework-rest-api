@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const validation = require('./validation')
+// const validation = require('./validation')
 const usersControllers = require('../../../controllers/users')
 const guard = require('../../../helpers/guard')
 
