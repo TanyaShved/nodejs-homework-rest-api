@@ -69,8 +69,36 @@ const logout = async (req, res, _next) => {
   return res.status(HttpCode.NO_CONTENT).json({})
 }
 
+const currentUser = async (req, res, next) => {
+  const id = req.user.id;
+  try {
+    const user = await Users.findById(id);
+     if (!user) {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: 'error',
+        code: HttpCode.UNAUTHORIZED,
+        message: 'Not authorized',
+      });
+     }
+    
+    return res.status(HttpCode.OK).json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: {
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
     registration,
     login,
-    logout
+    logout,
+    currentUser
 }

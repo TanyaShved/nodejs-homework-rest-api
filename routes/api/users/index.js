@@ -9,4 +9,6 @@ router.post('/auth/register', createAccountLimiter, validation.validateAuth, use
 router.post('/auth/login', validation.validateAuth, usersControllers.login)
 router.post('/auth/logout', guard, usersControllers.logout)
 
+router.get('/current', guard, usersControllers.currentUser);
+
 module.exports = router
