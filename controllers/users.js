@@ -96,9 +96,40 @@ const currentUser = async (req, res, next) => {
   }
 };
 
+const updateUserSub = async (req, res, next) => {
+  const id = req.user.id;
+  try {
+    await Users.updateUserSub(id, req.body.subscription);
+    const user = await Users.findById(id);
+    
+     if (!user) {
+      return res.status(HttpCode.BAD_REQUEST).json({
+        status: 'error',
+        code: HttpCode.BAD_REQUEST,
+        data: 'Bad request',
+        message: 'Bad request',
+      });
+    }
+
+    return res.json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: {
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
     registration,
     login,
     logout,
-    currentUser
+    currentUser,
+    updateUserSub
 }

@@ -11,4 +11,6 @@ router.post('/auth/logout', guard, usersControllers.logout)
 
 router.get('/current', guard, usersControllers.currentUser);
 
+router.patch('/', guard, usersControllers.updateUserSub);
+
 module.exports = router
