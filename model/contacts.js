@@ -1,60 +1,59 @@
 const Contact = require('./schemas/contact')
 
-// const db = require('./db')
-// const { ObjectID } = require('mongodb')
+const listContacts = async (userId,
+  { sortBy, sortByDesc, sub, filter, page = '1', limit = '20' }) => {
+  
+  const options = { owner: userId };
+  if (sub) {
+    options.subscription = { $all: [sub] };
+  }
 
-// const getCollection = async (db, name)  => {
-// const client = await db
-// const collection = await client.db().collection(name)
-// return collection
-// }
-
-const listContacts = async () => {
-  const results = await Contact.find({})
-  return results
-  // const collection = await getCollection(db, 'contacts')
-  // const results = await collection.find({}).toArray()
+  const results = await Contact.paginate(options, {
+    limit,
+    page,
+    // сортировка sortBy - по возрастанию,
+    // sortByDesc - по убиванию
+    sort: {
+      ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
+      ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {})
+    },
+    // Фильтрация при запросе через |
+    select: filter ? filter.split('|').join(' ') : '',
+    populate: {
+    path: 'owner',
+    select: 'email subscription -_id',
+    }
+  })
+  const {docs: contacts, totalDocs: total} = results
+  return {total: total.toString(), page, limit, contacts}
+  // return results
 }
 
-const getContactById = async (contactId) => {
-  const result = await Contact.findOne({ _id: contactId })
+const getContactById = async (contactId, userId) => {
+  const result = await Contact.findOne({ _id: contactId, owner: userId }).populate({
+    path: 'owner',
+    select: 'email subscription -_id',
+  })
   return result
-
-  // const collection = await getCollection(db, 'contacts')
-  // const objectId = new ObjectID(contactId)
 }
 
 const addContact = async (body) => {
   const result = await Contact.create(body)
   return result
-
-  // const collection = await getCollection(db, 'contacts')
-  // const record = {
-  //   ...body,
-  // }
-  // const { ops: [result] } = await collection.insertOne(record)
 }
 
-const updateContact = async (id, body) => {
-   const result = await Contact.findByIdAndUpdate(
-    { _id: id },
+const updateContact = async (id, body, userId) => {
+   const result = await Contact.findOneAndUpdate(
+    { _id: id, owner: userId },
     { ...body },
     { new: true }
   )
   return result 
-
-  // const collection = await getCollection(db, 'contacts')
-  // const objectId = new ObjectID(id)
-  // const { value: result } = await collection.findOneAndUpdate({ _id: objectId }, { $set: body }, { returnOriginal: false })
 }
 
-const removeContact = async (contactId) => {
-  const result = await Contact.findByIdAndRemove({ _id: contactId })
+const removeContact = async (contactId, userId) => {
+  const result = await Contact.findOneAndRemove({ _id: contactId, owner: userId })
   return result 
-
-  // const collection = await getCollection(db, 'contacts')
-  // const objectId = new ObjectID(contactId)
-  // const { value: result } = await collection.findOneAndDelete({ _id: objectId })
 }
 
 module.exports = {
