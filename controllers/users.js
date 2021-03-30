@@ -146,7 +146,7 @@ const avatars = async (req, res, next) => {
     fs.rename(pathFile, path.join(AVATAR_OF_USERS, id, newNameAvatar))
     const avatarUrl = path.normalize(path.join('images', id, newNameAvatar))
     try {
-      await fs.unlink(path.join(process.cwd(), AVATAR_OF_USERS, req.user.avatarURL))
+      await fs.unlink(path.join(process.cwd(), 'public', req.user.avatarURL))
     } catch (e) {
       console.log(e.message);
     }

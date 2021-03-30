@@ -21,3 +21,13 @@ const validate = (schema, obj, next) => {
 module.exports.validateAuth = (req, _res, next) => {
     return validate(schemaValidateAuth, req.body, next)
 }
+
+module.exports.validateUploadAvatar = (req, _res, next) => {
+  if (!req.file) {
+    return next({
+      status: HttpCode.BAD_REQUEST,
+      message: 'Bad request',
+    });
+  }
+  next();
+};
