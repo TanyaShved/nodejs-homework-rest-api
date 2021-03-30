@@ -3,7 +3,7 @@ const logger = require('morgan')
 const cors = require('cors')
 const path = require('path');
 const helmet = require("helmet");
-const { HttpCode } = require('./helpers/constants')
+const { HttpCode, Folder } = require('./helpers/constants')
 const { apiLimiter }  = require('./helpers/rate-limit');
 
 const contactsRouter = require('./routes/api/contacts')
@@ -11,7 +11,7 @@ const usersRouter = require('./routes/api/users')
 
 const app = express()
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, Folder.PUBLIC)));
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
