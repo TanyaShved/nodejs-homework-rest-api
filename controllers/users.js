@@ -144,7 +144,7 @@ const avatars = async (req, res, next) => {
       .writeAsync(pathFile)
     await createFolderIsExist(path.join(AVATAR_OF_USERS, id))
     fs.rename(pathFile, path.join(AVATAR_OF_USERS, id, newNameAvatar))
-    const avatarUrl = path.normalize(path.join(id, newNameAvatar))
+    const avatarUrl = path.normalize(path.join('images', id, newNameAvatar))
     try {
       await fs.unlink(path.join(process.cwd(), AVATAR_OF_USERS, req.user.avatarURL))
     } catch (e) {
