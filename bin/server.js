@@ -1,11 +1,17 @@
 const app = require('../app')
 const db = require('../model/db')
+const createFolderIsExist = require('../helpers/create-dir')
+require('dotenv').config()
 
 const PORT = process.env.PORT || 3000
 
 
 db.then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
+    const TMP_DIR = process.env.TMP_DIR;
+    const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
+    await createFolderIsExist(TMP_DIR);
+    await createFolderIsExist(AVATAR_OF_USERS);
   console.log(`Server running. Use our API on port: ${PORT}`)
 })
 }).catch((err) => {

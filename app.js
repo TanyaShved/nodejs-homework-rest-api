@@ -1,8 +1,9 @@
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
+const path = require('path');
 const helmet = require("helmet");
-const { HttpCode } = require('./helpers/constants')
+const { HttpCode, Folder } = require('./helpers/constants')
 const { apiLimiter }  = require('./helpers/rate-limit');
 
 const contactsRouter = require('./routes/api/contacts')
@@ -10,10 +11,12 @@ const usersRouter = require('./routes/api/users')
 
 const app = express()
 
+app.use(express.static(path.join(__dirname, Folder.PUBLIC)));
+
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(helmet())
-app.use(logger(formatsLogger))
+app.get('env') !== 'test' && app.use(logger(formatsLogger));
 app.use(cors())
 app.use(express.json({ limit: 10000 }))
 

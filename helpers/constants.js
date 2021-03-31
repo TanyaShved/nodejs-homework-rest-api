@@ -16,7 +16,13 @@ const HttpCode = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
+const Folder = {
+  PUBLIC: 'public',
+  IMAGES: 'images',
+};
+
 module.exports = {
     Subscription,
     HttpCode,
+    Folder
 }

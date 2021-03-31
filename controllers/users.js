@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken')
 const Users = require('../model/users')
-const { HttpCode } = require('../helpers/constants')
+const fs = require('fs/promises');
+const path = require('path');
+const Jimp = require('jimp');
+const { HttpCode, Folder } = require('../helpers/constants')
+const createFolderIsExist = require('../helpers/create-dir');
+const User = require('../model/schemas/user');
 require('dotenv').config()
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -21,7 +26,8 @@ const registration = async (req, res, next) => {
       code: HttpCode.CREATED,
       data: {
         user: {
-    email: newUser.email,
+          email: newUser.email,
+          avatarURL: newUser.avatarURL,
     subscription: newUser.subscription,
   }
       }
@@ -35,7 +41,7 @@ const login = async (req, res, next) => {
      try {
         const { email, password } = req.body
        const user = await Users.findByEmail(email)
-       const isValidPassword = await user.validPassword(password)
+       const isValidPassword = await user?.validPassword(password)
         if (!user || !isValidPassword) {
         return res.status(HttpCode.UNAUTHORIZED).json({
             status: 'error',
@@ -106,7 +112,6 @@ const updateUserSub = async (req, res, next) => {
       return res.status(HttpCode.BAD_REQUEST).json({
         status: 'error',
         code: HttpCode.BAD_REQUEST,
-        data: 'Bad request',
         message: 'Bad request',
       });
     }
@@ -126,10 +131,50 @@ const updateUserSub = async (req, res, next) => {
   }
 }
 
+const avatars = async (req, res, next) => {
+  try {
+    const id = req.user.id
+    const avatarUrl = await saveAvatarToStatic(req)
+    
+    await Users.uppdateAvatar(id, avatarUrl)
+    return res.json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: {
+        avatarUrl,
+        },
+    });
+  } catch (e) {
+    next(e); 
+  }
+}
+
+const saveAvatarToStatic = async req => {
+  const id = req.user.id
+  const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS
+    const pathFile = req.file.path
+    const newNameAvatar = `${Date.now()}-${req.file.originalname}`
+    const img = await Jimp.read(pathFile)
+    await img
+    .autocrop()
+    .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
+      .writeAsync(pathFile)
+    await createFolderIsExist(path.join(AVATAR_OF_USERS, id))
+    fs.rename(pathFile, path.join(AVATAR_OF_USERS, id, newNameAvatar))
+    const avatarUrl = path.normalize(path.join(Folder.IMAGES, id, newNameAvatar))
+    try {
+      await fs.unlink(path.join(process.cwd(), Folder.PUBLIC, req.user.avatarURL))
+    } catch (e) {
+      console.log(e.message);
+    }
+  return avatarUrl
+}
+
 module.exports = {
     registration,
     login,
     logout,
     currentUser,
-    updateUserSub
+    updateUserSub,
+    avatars
 }
