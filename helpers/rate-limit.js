@@ -15,7 +15,7 @@ const apiLimiter = rateLimit({
 
 const createAccountLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, 
-  max: 2,
+  max: 10,
   handler: (_req, res, _next) => {
     return res.status(HttpCode.BAD_REQUEST).json({
           status: 'error',
